@@ -1,0 +1,166 @@
+/* 🌟 Styles généraux */
+body {
+    background-color: #f8f9fa;
+}
+
+/* 🌙 Correction du mode sombre */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode .card,
+body.dark-mode .container {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #333;
+}
+
+body.dark-mode .form-control {
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+body.dark-mode .btn-outline-dark {
+    background-color: #444;
+    color: #ffffff;
+    border-color: #777;
+}
+
+body.dark-mode .btn-outline-dark:hover {
+    background-color: #666;
+    border-color: #999;
+}
+
+/* Icône de la croix en mode sombre */
+body.dark-mode #clearUrl {
+    color: #ffffff;
+}
+
+body.dark-mode #clearUrl:hover {
+    color: #ff5555;
+}
+
+
+/* 🌟 Bouton "Télécharger" moderne */
+.btn-download {
+    display: inline-block;
+    background: linear-gradient(45deg, #007bff, #00c6ff);
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-download:hover {
+    background: linear-gradient(45deg, #0056b3, #0099ff);
+    transform: scale(1.05);
+}
+
+/* 🌟 Icône de suppression (croix moderne avec effet) */
+#clearUrl {
+    border: none;
+    background: none;
+    font-size: 22px;
+    color: #dc3545; /* Rouge élégant */
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+#clearUrl:hover {
+    color: #ff0000; /* Rouge vif au survol */
+    transform: scale(1.2);
+}
+
+/* Ajustement de l’icône pour un meilleur alignement */
+#clearUrl i {
+    pointer-events: none;
+}
+
+/* 🌟 Amélioration du bouton "Télécharger" */
+.btn-download {
+    display: inline-block;
+    background: linear-gradient(45deg, #007bff, #00c6ff);
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-download:hover {
+    background: linear-gradient(45deg, #0056b3, #0099ff);
+    transform: scale(1.05);
+}
+
+.btn-download:active {
+    transform: scale(0.95);
+    background: linear-gradient(45deg, #003366, #007acc);
+}
+
+/* 🌟 Style pour la FAQ */
+.accordion-button {
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: background 0.3s ease-in-out;
+}
+
+.accordion-button:hover {
+    background: #f0f0f0;
+}
+
+.accordion-body {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* 🌟 Message d'erreur en cas de panne de connexion */
+#connection-error {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    z-index: 9999;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+ /* 🌟 Amélioration du message d'erreur de connexion */
+#connection-error {
+    position: fixed;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    z-index: 9999;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: top 0.5s ease-in-out;
+}
+
+#connection-error.show {
+    top: 10px;
+}
+
+/* 🌟 Message d'erreur amélioré */
+#error-message {
+    display: none;
+    color: white;
+    background-color: #dc3545; /* Rouge alerte */
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 15px;
+    transition: opacity 0.3s ease-in-out;
+}
