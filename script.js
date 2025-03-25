@@ -1,4 +1,3 @@
-HEAD
 // ✅ Fonction pour extraire l'ID de la vidéo
 function getVideoId(url) {
     const regex = /(?:youtube\.com\/.*[?&]v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -12,80 +11,146 @@ function updateThumbnail() {
     const resultDiv = document.getElementById('result');
     const errorMessage = document.getElementById('error-message');
     const spinner = document.getElementById('loading-spinner');
+    const downloadBtn = document.getElementById("downloadBtn");
 
-    // ✅ Vérifier si l'utilisateur a une connexion Internet
+    // ✅ Vérifier la connexion
     if (!navigator.onLine) {
         resultDiv.innerHTML = "";
-        errorMessage.textContent = "⚠ No internet connection. Please check your network.";
+        errorMessage.textContent = "⚠ No internet connection.";
         errorMessage.style.display = "block";
+        downloadBtn.style.display = "none"; // Cacher le bouton
         return;
     }
 
-    // ✅ Vérifier si l’URL collée est un lien YouTube valide
+    // ✅ Vérifier si l’URL YouTube est valide
     const videoId = getVideoId(videoUrl);
     if (!videoId) {
-        resultDiv.innerHTML = ""; // Effacer toute image incorrecte
-        errorMessage.textContent = "❌ Invalid YouTube URL. Please enter a valid link.";
+        resultDiv.innerHTML = "";
+        errorMessage.textContent = "❌ Invalid YouTube URL.";
         errorMessage.style.display = "block";
+        downloadBtn.style.display = "none"; // Cacher le bouton
         return;
     }
 
-    // ✅ Si l'URL est correcte, cacher le message d'erreur
+    // ✅ Cacher l'erreur et afficher le spinner
     errorMessage.style.display = "none";
     spinner.style.display = "block";
 
     const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/${resolution}.jpg`;
 
-    // ✅ Charger l’image uniquement si la connexion est active
+    // ✅ Charger l’image
     const img = new Image();
-    img.crossOrigin = "anonymous"; 
+    img.crossOrigin = "anonymous";
     img.src = thumbnailUrl;
 
     img.onload = function () {
+        console.log("Image loaded, showing download button"); // Debug
         spinner.style.display = "none";
-        resultDiv.innerHTML = `<img src="${thumbnailUrl}" class="img-fluid rounded shadow-sm">`;
+        resultDiv.innerHTML = `<img id="thumbnailImage" src="${thumbnailUrl}" class="img-fluid rounded shadow-sm">`;
+        document.getElementById("downloadBtn").style.display = "block"; // 🔥 Affichage du bouton après chargement        
+        downloadBtn.style.display = "block"; // Afficher le bouton après chargement
     };
+    
 
-    // ✅ Si l’image ne charge pas (problème de vidéo inexistante)
     img.onerror = function () {
         spinner.style.display = "none";
         resultDiv.innerHTML = "";
-        errorMessage.textContent = "❌ Failed to load thumbnail. The video may not exist.";
+        errorMessage.textContent = "❌ Failed to load thumbnail.";
         errorMessage.style.display = "block";
+        downloadBtn.style.display = "none"; // Cacher le bouton si erreur
     };
 }
 
 
 
-// ✅ Fonction pour convertir l'image en canvas et la télécharger
-function downloadThumbnail(url) {
-    const img = new Image();
-    img.crossOrigin = "anonymous"; // Éviter les restrictions CORS
-    img.src = url;
+// ✅ Correction du bouton "Télécharger" 
+document.getElementById("downloadBtn").addEventListener("click", function () {
+    const imgElement = document.querySelector("#result img");
+    if (!imgElement) {
+        alert("❌ No thumbnail available to download.");
+        return;
+    }
 
+    const imageUrl = imgElement.src;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = imageUrl;
+    
     img.onload = function () {
-        // ✅ Création d’un canvas pour dessiner l’image
         const canvas = document.createElement("canvas");
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext("2d");
-
-        // ✅ Dessiner l’image sur le canvas
-        ctx.drawImage(img, 0, 0, img.width, img.height);
-
-        // ✅ Convertir en image et déclencher le téléchargement
+        ctx.drawImage(img, 0, 0);
+        
         const link = document.createElement("a");
-        link.href = canvas.toDataURL("image/png"); // Convertir en PNG
-        link.download = "youtube-thumbnail.png"; // Nom du fichier
+        link.href = canvas.toDataURL("image/png");
+        link.download = "youtube-thumbnail.png";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
 
     img.onerror = function () {
-        alert("❌ Erreur lors du chargement de l'image. Veuillez réessayer.");
+        alert("❌ Failed to load the image. Try again.");
     };
+});
+
+
+// ✅ Réinitialisation du formulaire
+function resetForm() {
+    document.getElementById('videoUrl').value = '';
+    document.getElementById('resolution').value = 'maxresdefault';
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('error-message').style.display = "none";
+    document.getElementById('clearUrl').style.display = "none";
+    document.getElementById('downloadBtn').style.display = "none"; // Cacher le bouton au reset
 }
+
+// ✅ Vérification de connexion Internet en temps réel
+function checkInternetConnection() {
+    const errorDiv = document.getElementById("connection-error");
+    if (!navigator.onLine) {
+        errorDiv.classList.add("show");
+        errorDiv.classList.remove("d-none");
+    } else {
+        errorDiv.classList.remove("show");
+        setTimeout(() => errorDiv.classList.add("d-none"), 500);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    checkInternetConnection();
+    window.addEventListener("offline", checkInternetConnection);
+    window.addEventListener("online", checkInternetConnection);
+});
+
+
+
+
+function downloadThumbnail(url) {
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to fetch the image.");
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "youtube-thumbnail.jpg";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href); // ✅ Libère la mémoire
+        })
+        .catch(error => {
+            console.error("Erreur lors du téléchargement :", error);
+            alert("❌ Impossible de télécharger l'image.");
+        });
+}
+
 
 
 // ✅ Fonction pour réinitialiser le formulaire
@@ -100,8 +165,28 @@ function resetForm() {
 // ✅ Fonction pour activer/désactiver le mode sombre
 document.getElementById("darkModeToggle").addEventListener("click", function () {
     document.body.classList.toggle("dark-mode");
-    localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+
+    // Vérifie l'état actuel du mode sombre et enregistre-le
+    if (document.body.classList.contains("dark-mode")) {
+        localStorage.setItem("theme", "dark");
+    } else {
+        localStorage.setItem("theme", "light");
+    }
 });
+
+// ✅ Appliquer le mode sombre si enregistré
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+});
+
 
 // ✅ Appliquer le mode sombre enregistré
 if (localStorage.getItem("theme") === "dark") {
@@ -279,50 +364,20 @@ function updateThumbnail() {
     img.src = thumbnailUrl;
 
     img.onload = function () {
+        console.log("Image loaded, showing download button"); // Debug
         spinner.style.display = "none";
-        resultDiv.innerHTML = `<img src="${thumbnailUrl}" class="img-fluid rounded shadow-sm">`;
+        resultDiv.innerHTML = `<img id="thumbnailImage" src="${thumbnailUrl}" class="img-fluid rounded shadow-sm">`;
+        
+        // ✅ Assurez-vous que le bouton devient visible
+        const downloadBtn = document.getElementById("downloadBtn");
+        if (downloadBtn) {
+            downloadBtn.style.display = "block";
+        }
     };
-
-    // ✅ Si l’image ne charge pas (problème de vidéo inexistante)
-    img.onerror = function () {
-        spinner.style.display = "none";
-        resultDiv.innerHTML = "";
-        errorMessage.textContent = "❌ Failed to load thumbnail. The video may not exist.";
-        errorMessage.style.display = "block";
-    };
+    
 }
 
 
-
-// ✅ Fonction pour convertir l'image en canvas et la télécharger
-function downloadThumbnail(url) {
-    const img = new Image();
-    img.crossOrigin = "anonymous"; // Éviter les restrictions CORS
-    img.src = url;
-
-    img.onload = function () {
-        // ✅ Création d’un canvas pour dessiner l’image
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext("2d");
-
-        // ✅ Dessiner l’image sur le canvas
-        ctx.drawImage(img, 0, 0, img.width, img.height);
-
-        // ✅ Convertir en image et déclencher le téléchargement
-        const link = document.createElement("a");
-        link.href = canvas.toDataURL("image/png"); // Convertir en PNG
-        link.download = "youtube-thumbnail.png"; // Nom du fichier
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    img.onerror = function () {
-        alert("❌ Erreur lors du chargement de l'image. Veuillez réessayer.");
-    };
-}
 
 
 // ✅ Fonction pour réinitialiser le formulaire
@@ -335,10 +390,23 @@ function resetForm() {
 }
 
 // ✅ Fonction pour activer/désactiver le mode sombre
-document.getElementById("darkModeToggle").addEventListener("click", function () {
+function toggleDarkMode() {
     document.body.classList.toggle("dark-mode");
+
+    // Sauvegarde le mode sombre dans le localStorage
     localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+}
+
+// ✅ Vérification au chargement de la page
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+
+    // Ajout d'un événement au bouton
+    document.getElementById("darkModeToggle").addEventListener("click", toggleDarkMode);
 });
+
 
 // ✅ Appliquer le mode sombre enregistré
 if (localStorage.getItem("theme") === "dark") {
@@ -473,3 +541,26 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('error-message').style.display = "none";
     });
 }); 
+document.getElementById("downloadBtn").addEventListener("click", function () {
+    const videoUrl = document.getElementById('videoUrl').value.trim();
+    const resolution = document.getElementById('resolution').value;
+    const videoId = getVideoId(videoUrl);
+
+    if (!videoId) {
+        alert("❌ Invalid YouTube URL. Please enter a valid link.");
+        return;
+    }
+
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/${resolution}.jpg`;
+    downloadThumbnail(thumbnailUrl);
+});
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+
+    document.getElementById("darkModeToggle").addEventListener("click", function () {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    });
+});
