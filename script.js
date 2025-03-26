@@ -108,7 +108,7 @@ function resetForm() {
 }
 
 // ✅ Vérification de connexion Internet en temps réel
-function checkInternetConnection() {
+function checkInternetConnection() { 
     const errorDiv = document.getElementById("connection-error");
     if (!navigator.onLine) {
         errorDiv.classList.add("show");
