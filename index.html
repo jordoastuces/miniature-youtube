@@ -17,6 +17,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
     <meta name="google-site-verification" content="yNsrKAjh2jQ5P0UQlouUHhzGrtT-ffLGfkC-EnM9OLw" />
+
 </head>
 <body>
 
@@ -221,6 +222,7 @@
 
         
     </div>
+    
 </section>
 <!-- 🌟 Message d'erreur en cas de panne de connexion -->
 <div id="connection-error" class="alert alert-danger text-center d-none" role="alert">
@@ -238,5 +240,27 @@
     
     <!-- Custom JS -->
     <script src="script.js"></script>
+
+    <div <div id="cookiePopup" class="cookie-popup">
+    <div class="cookie-content">
+        <i class="fas fa-cookie-bite cookie-icon"></i>
+        <p>We use cookies to improve your experience. By continuing, you agree to our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+        
+        <div class="cookie-options">
+            <label><input type="checkbox" id="essentialCookies" checked disabled> Essential Cookies</label>
+            <label><input type="checkbox" id="analyticsCookies"> Analytics Cookies</label>
+            <label><input type="checkbox" id="marketingCookies"> Marketing Cookies</label>
+        </div>
+        
+        <div class="cookie-buttons">
+            <button id="acceptCookies" class="btn btn-primary">Accept</button>
+            <button id="declineCookies" class="btn btn-outline-light">Decline</button>
+        </div>
+    </div>
+</div>
+   
+    
+    
+    
 </body>
 </html>

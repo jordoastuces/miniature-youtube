@@ -564,3 +564,29 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const cookiePopup = document.getElementById("cookiePopup");
+    const acceptCookiesBtn = document.getElementById("acceptCookies");
+    const declineCookiesBtn = document.getElementById("declineCookies");
+
+    if (!localStorage.getItem("cookiesAccepted")) {
+        cookiePopup.style.display = "block";
+        setTimeout(() => cookiePopup.classList.add("show"), 100);
+    }
+
+    acceptCookiesBtn.addEventListener("click", function () {
+        localStorage.setItem("cookiesAccepted", "true");
+        hideCookiePopup();
+    });
+
+    declineCookiesBtn.addEventListener("click", function () {
+        localStorage.setItem("cookiesAccepted", "false");
+        hideCookiePopup();
+    });
+
+    function hideCookiePopup() {
+        cookiePopup.classList.remove("show");
+        setTimeout(() => cookiePopup.style.display = "none", 500);
+    }
+});
